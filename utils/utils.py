@@ -281,6 +281,8 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
     # Prepare input data
     image, label = image.squeeze(0).cpu().detach().numpy(), label.squeeze(0).cpu().detach().numpy()
 
+    # pdb.set_trace()
+
     # Define mask labels and colors
     mask_labels = np.arange(1, classes) if class_names is None else class_names
     my_colors = ['red', 'darkorange', 'yellow', 'forestgreen', 'blue', 'purple', 
@@ -327,10 +329,13 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                 image_slice_expanded = np.expand_dims(image_slice, axis=0)
                 repeated_images = np.repeat(image_slice_expanded, 8, axis=0)
 
+                # sanity check
+                random_bool_matrix = np.random.choice([True, False], size=(8, 512, 512))
+
                 cv2.imwrite(f"{test_save_path}/{case}_{ind}_img.png", repeated_images[0])
 
                 # Overlay masks for ground truth and predictions
-                fig_gt = custom_overlay_masks(repeated_images, masks, labels=mask_labels, colors=cmap, alpha=0.5)
+                fig_gt = custom_overlay_masks(repeated_images, random_bool_matrix, labels=mask_labels, colors=cmap, alpha=0.5)
                 fig_gt.savefig(f"{test_save_path}/{case}_{ind}_gt.png", bbox_inches="tight", dpi=300)
 
                 fig_pred = custom_overlay_masks(repeated_images, preds_o, labels=mask_labels, colors=cmap, alpha=0.5)
