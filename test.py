@@ -13,6 +13,7 @@ from datasets.dataset_synapse import Synapse_dataset
 from utils.utils import test_single_volume
 from unet.unet_stvit import UNet_STA
 
+import pdb
 
 
 parser = argparse.ArgumentParser()
@@ -131,30 +132,55 @@ if __name__ == "__main__":
     net =  UNet_STA(n_in=1, n_class=args.num_classes).cuda()
     
     
-    
-    for epoch in reversed(range(157,args.max_epochs)):
-        if (epoch+1)%2==0:
-            snapshot = os.path.join(args.output_dir, f'epoch_{epoch}.pth')
+    # pdb.set_trace() 
+    # for epoch in reversed(range(157,args.max_epochs)):
+    #     if (epoch+1)%2==0:
+    #         snapshot = os.path.join(args.output_dir, f'epoch_{epoch}.pth')
 
-            msg = net.load_state_dict(torch.load(snapshot), strict = False)
-            print("self trained vanilla unet",msg)
-            snapshot_name = f'{args.output_dir}'+snapshot.split('/')[-1]
+    #         msg = net.load_state_dict(torch.load(snapshot), strict = False)
+    #         print("self trained vanilla unet",msg)
+    #         snapshot_name = f'{args.output_dir}'+snapshot.split('/')[-1]
 
-            # log_folder = f'./test_log/test_log_{args.output_dir}'
-            log_folder = f'./test_log/'
-            os.makedirs(log_folder, exist_ok=True)
-            logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
-            logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-            logging.info(str(args))
-            logging.info(snapshot_name)
+    #         # log_folder = f'./test_log/test_log_{args.output_dir}'
+    #         log_folder = f'./test_log/'
+    #         os.makedirs(log_folder, exist_ok=True)
+    #         logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
+    #         logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+    #         logging.info(str(args))
+    #         logging.info(snapshot_name)
 
-            # if args.is_savenii:
-            args.test_save_dir = os.path.join(args.output_dir, "predictions")
-            test_save_path = args.test_save_dir 
-            os.makedirs(test_save_path, exist_ok=True)
-            # else:
-            # test_save_path = None
-            inference(args, net, test_save_path)
+    #         # if args.is_savenii:
+    #         args.test_save_dir = os.path.join(args.output_dir, "predictions")
+    #         test_save_path = args.test_save_dir 
+    #         os.makedirs(test_save_path, exist_ok=True)
+    #         # else:
+    #         # test_save_path = None
+    #         inference(args, net, test_save_path)
+
+    epoch = 150
+    snapshot = os.path.join(args.output_dir, f'epoch_{epoch}.pth')
+
+    msg = net.load_state_dict(torch.load(snapshot, map_location='cuda:0'), strict = False)
+    print("self trained vanilla unet",msg)
+    snapshot_name = f'{args.output_dir}'+snapshot.split('/')[-1]
+
+    # log_folder = f'./test_log/test_log_{args.output_dir}'
+    log_folder = f'./test_log/'
+    os.makedirs(log_folder, exist_ok=True)
+    # logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+    logging.info(str(args))
+    logging.info(snapshot_name)
+
+    # if args.is_savenii:
+    args.test_save_dir = os.path.join(args.output_dir, "predictions")
+    test_save_path = args.test_save_dir 
+    os.makedirs(test_save_path, exist_ok=True)
+    # else:
+    # test_save_path = None
+    inference(args, net, test_save_path)
+
+
 #     snapshot = os.path.join(args.output_dir, 'best_model.pth')
 #     if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'epoch_'+str(args.max_epochs-1))
 #     msg = net.load_state_dict(torch.load(snapshot))
