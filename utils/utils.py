@@ -295,6 +295,8 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
         prediction = np.zeros_like(label)
 
         for ind in range(image.shape[0]):
+
+            ind = 100
             slice = image[ind, :, :]
             x, y = slice.shape[0], slice.shape[1]
 
@@ -335,13 +337,15 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                 cv2.imwrite(f"{test_save_path}/{case}_{ind}_img.png", repeated_images[0])
 
                 # Overlay masks for ground truth and predictions
-                fig_gt = custom_overlay_masks(repeated_images, random_bool_matrix, labels=mask_labels, colors=cmap, alpha=0.5)
+                fig_gt = custom_overlay_masks(repeated_images, masks, labels=mask_labels, colors=cmap, alpha=0.5)
                 fig_gt.savefig(f"{test_save_path}/{case}_{ind}_gt.png", bbox_inches="tight", dpi=300)
 
                 fig_pred = custom_overlay_masks(repeated_images, preds_o, labels=mask_labels, colors=cmap, alpha=0.5)
                 fig_pred.savefig(f"{test_save_path}/{case}_{ind}_pred.png", bbox_inches="tight", dpi=300)
 
                 plt.close('all')  # Close plots to free memory
+
+                pdb.set_trace()
 
     else:
         input = torch.from_numpy(image).unsqueeze(
